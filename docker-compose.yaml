@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /gocompositor
+    command: dockerize go run main.go
+    environment: 
+      APP_CACHE_URL: redis://cache:6379/0
+    volumes:
+      - .:/gocompositor
