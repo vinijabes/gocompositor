@@ -1,2 +1,8 @@
+github.com/gotk3/gotk3 v0.4.0 h1:TIuhyQitGeRTxOQIV3AJlYtEWWJpC74JHwAIsxlH8MU=
+github.com/gotk3/gotk3 v0.4.0/go.mod h1:Eew3QBwAOBTrfFFDmsDE5wZWbcagBL1NUslj1GhRveo=
 github.com/notedit/gstreamer-go v0.3.1 h1:gkHgNY4Qswv5hZxq5GbZ1lPGUX26BoMAqWVaoIX7ohE=
 github.com/notedit/gstreamer-go v0.3.1/go.mod h1:CGCLZR47aRzzEmup8uQcplfOdLqEtJjFihiu+A2aIZw=
+github.com/spreadspace/go-gstreamer v0.0.0-20161229210907-679bfc729cef h1:QsYsulNjdULqJQEZxeQ8MHxtk3gktfk2ePuL/JE1klE=
+github.com/spreadspace/go-gstreamer v0.0.0-20161229210907-679bfc729cef/go.mod h1:UU4s1t7Mnwf6EKCihQaCwpm1LcmNTNA+eUPO7N6yT6Q=
+github.com/ziutek/glib v0.0.0-20141105171902-a43f7a959840 h1:KlAjvC+L41Ki6fICR9D/QjIHpliLGDzn6EbRzOLLlBU=
+github.com/ziutek/glib v0.0.0-20141105171902-a43f7a959840/go.mod h1:szXPhCLKZNso3Tek6TW1XJIZUp9a8Huns4GtRNe/q8U=

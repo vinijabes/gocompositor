@@ -1,0 +1,4 @@
+*.flv
+*.env
+
+.vscode/

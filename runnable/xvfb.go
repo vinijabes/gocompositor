@@ -70,12 +70,11 @@ func (xvfb XVFBImpl) Start() error {
 func (xvfb XVFBImpl) Stop() {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered in f", r)
+			fmt.Println("Recovered in XVFBImpl::Stop", r)
 		}
 	}()
 
-	xvfb.process.Process.Kill()
-	xvfb.process = nil
+	xvfb.process.Process.Signal(os.Interrupt)
 	log.Println("xvfb terminated")
 }
 
