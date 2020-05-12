@@ -131,3 +131,10 @@ func (v *Video) SetVideobox(src *gstreamer.Element) {
 	//FIX: check for existent videobox and remove it
 	v.gstVideobox = src
 }
+
+//Push ...
+func (v *Video) Push(buffer []byte) {
+	if v.gstSrc != nil {
+		v.gstSrc.Push(buffer)
+	}
+}
