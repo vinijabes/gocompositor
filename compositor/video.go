@@ -50,6 +50,11 @@ func NewVideo(width int, height int, srcPlugin string) (*Video, error) {
 		return nil, err
 	}
 
+	return NewVideoFromElement(src, width, height)
+}
+
+//NewVideoFromElement ...
+func NewVideoFromElement(src *gstreamer.Element, width int, height int) (*Video, error) {
 	filter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("filter_%d", videoIDGenerator))
 	if err != nil {
 		return nil, err
@@ -107,4 +112,22 @@ func (v *Video) SetSize(width int64, height int64) {
 //SetBorder ...
 func (v *Video) SetBorder(border string, value int64) {
 	v.gstVideobox.SetInt(border, value)
+}
+
+//SetSrc ...
+func (v *Video) SetSrc(src *gstreamer.Element) {
+	//FIX: check for existent src and remove it
+	v.gstSrc = src
+}
+
+//SetFilter ...
+func (v *Video) SetFilter(filter *gstreamer.Element) {
+	//FIX: check for existent filter and remove it
+	v.gstFilter = filter
+}
+
+//SetVideobox ...
+func (v *Video) SetVideobox(src *gstreamer.Element) {
+	//FIX: check for existent videobox and remove it
+	v.gstVideobox = src
 }
