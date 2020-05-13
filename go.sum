@@ -8,6 +8,12 @@ github.com/vinijabes/gostreamer v0.0.0-20200428124218-88af220f55ae h1:i6gFhsfcWL
 github.com/vinijabes/gostreamer v0.0.0-20200428124218-88af220f55ae/go.mod h1:S3nuqPMlxJBtEU3CSb9QOEbWNFxfv+G4nlj31SCffcc=
 github.com/vinijabes/gostreamer v0.1.0 h1:Ws6UBbQgR0abZY9oIqeaoK4TviacfELmVAOvFOc4osU=
 github.com/vinijabes/gostreamer v0.1.0/go.mod h1:S3nuqPMlxJBtEU3CSb9QOEbWNFxfv+G4nlj31SCffcc=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513024400-a39f7d19f083 h1:P3KebcjWU8450tt3x26297U1Yby+caCGju9+BT21ji4=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513024400-a39f7d19f083/go.mod h1:S3nuqPMlxJBtEU3CSb9QOEbWNFxfv+G4nlj31SCffcc=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513025310-e8579c09323d h1:1DLQwO7X0AirHlS0pZwfZZZm12gDNFolM3GucjprkZA=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513025310-e8579c09323d/go.mod h1:S3nuqPMlxJBtEU3CSb9QOEbWNFxfv+G4nlj31SCffcc=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513025913-36796a032566 h1:GFc0LCGiHkvVRSGqYm4vzw3oP2RpLw8n3AlFa/Ief6c=
+github.com/vinijabes/gostreamer v0.1.1-0.20200513025913-36796a032566/go.mod h1:S3nuqPMlxJBtEU3CSb9QOEbWNFxfv+G4nlj31SCffcc=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=
 golang.org/x/text v0.3.2/go.mod h1:bEr9sfX3Q8Zfm5fL9x+3itogRgK3+ptLWKqgva+5dAk=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=

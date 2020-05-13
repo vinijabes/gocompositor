@@ -129,6 +129,11 @@ func main() {
 	layout.AddRule(videoRule4, 4)
 	cmp.SetLayout(layout)
 
+	_, err = compositor.NewRTCVideo(compositor.CodecVP8, 640, 360)
+	if err != nil {
+		panic(err)
+	}
+
 	// box2.SetPos(int64(640), int64(0))
 	// box3.SetPos(int64(0), int64(360))
 	// box4.SetPos(int64(640), int64(360))

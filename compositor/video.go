@@ -130,9 +130,9 @@ func NewRTCVideo(codec Codec, width int, height int) (RTCVideo, error) {
 	if err != nil {
 		return nil, err
 	}
-	src.Set("format", "time")
-	src.SetInt("is-live", int64(1))
-	src.SetInt("do-timestamp", int64(1))
+	src.SetInt("format", int64(2))
+	src.SetBool("is-live", true)
+	src.SetBool("do-timestamp", true)
 
 	filter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("filter_%d", videoIDGenerator))
 	if err != nil {
