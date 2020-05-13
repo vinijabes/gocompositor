@@ -124,11 +124,15 @@ func getDepayFromCodec(codec Codec) string {
 	panic("Unknown codec")
 }
 
+//NewRTCVideo ...
 func NewRTCVideo(width int, height int) (RTCVideo, error) {
 	src, err := gstreamer.NewElement("appsrc", fmt.Sprintf("source_%d", videoIDGenerator))
 	if err != nil {
 		return nil, err
 	}
+	src.Set("format", "time")
+	src.SetInt("is-live", int64(1))
+	src.SetInt("do-timestamp", int64(1))
 
 	filter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("filter_%d", videoIDGenerator))
 	if err != nil {
