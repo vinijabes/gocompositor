@@ -115,7 +115,7 @@ func (l *Layout) ApplyLayout(videos Videos) error {
 	return nil
 }
 
-func (l *LayoutSlot) applyLayout(video *Video) {
+func (l *LayoutSlot) applyLayout(video Video) {
 	video.SetPos(l.posx, l.posy)
 	video.SetSize(l.sizex, l.sizey)
 	video.SetBorder("left", -l.borderLeft)

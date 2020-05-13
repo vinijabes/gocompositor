@@ -73,9 +73,20 @@ func main() {
 	cmp.Add(sink)
 
 	cmp.LinkVideoSink(convert)
-	convert.Link(enc)
-	enc.Link(mux)
-	mux.Link(sink)
+	err = convert.Link(enc)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	err = enc.Link(mux)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	err = mux.Link(sink)
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	sink.Set("location", "rtmp://teste.com")
 

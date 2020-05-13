@@ -79,15 +79,10 @@ func newMixer(id int) (*Mixer, error) {
 }
 
 //AddVideo add new video
-func (c *Compositor) AddVideo(v *Video) error {
+func (c *Compositor) AddVideo(v Video) error {
 	pipeline := c.pipeline
-	v.pipeline = pipeline
 
-	pipeline.Add(v.gstSrc)
-	pipeline.Add(v.gstFilter)
-	pipeline.Add(v.gstVideobox)
-
-	err := v.internalLink()
+	err := v.SetPipeline(pipeline)
 	if err != nil {
 		return err
 	}
@@ -138,13 +133,13 @@ func (c *Compositor) LinkVideoSink(e *gstreamer.Element) {
 	c.mixer.gstOutputFilter.Link(e)
 }
 
-func (m *Mixer) link(v *Video) error {
+func (m *Mixer) link(v Video) error {
 	sink, err := m.gstMixer.RequestPad(m.gstPadTemplate)
 	if err != nil {
 		return err
 	}
 
-	srcPad, err := v.gstVideobox.GetStaticPad("src")
+	srcPad, err := v.GetSrcPad()
 	if err != nil {
 		return err
 	}
@@ -155,7 +150,7 @@ func (m *Mixer) link(v *Video) error {
 
 	sink.SetFloat("alpha", 1.0)
 
-	v.box = &box{gstSink: sink}
+	v.SetBox(&box{gstSink: sink})
 
 	return nil
 }
