@@ -125,7 +125,7 @@ func getDepayFromCodec(codec Codec) string {
 }
 
 //NewRTCVideo ...
-func NewRTCVideo(width int, height int) (RTCVideo, error) {
+func NewRTCVideo(codec Codec, width int, height int) (RTCVideo, error) {
 	src, err := gstreamer.NewElement("appsrc", fmt.Sprintf("source_%d", videoIDGenerator))
 	if err != nil {
 		return nil, err
@@ -139,7 +139,7 @@ func NewRTCVideo(width int, height int) (RTCVideo, error) {
 		return nil, err
 	}
 
-	depay, err := gstreamer.NewElement(getDepayFromCodec(CodecVP8), fmt.Sprintf("depay_%d", videoIDGenerator))
+	depay, err := gstreamer.NewElement(getDepayFromCodec(codec), fmt.Sprintf("depay_%d", videoIDGenerator))
 	if err != nil {
 		return nil, err
 	}
@@ -157,6 +157,7 @@ func NewRTCVideo(width int, height int) (RTCVideo, error) {
 			mediaType:   "video/x-raw",
 			id:          videoIDGenerator,
 		},
+		codec:    codec,
 		gstDepay: depay,
 	}
 
