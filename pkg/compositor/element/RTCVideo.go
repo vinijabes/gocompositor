@@ -20,6 +20,7 @@ const (
 
 type VideoRTC interface {
 	Video
+	Push(buffer []byte) error
 }
 
 type videoRTC struct {
