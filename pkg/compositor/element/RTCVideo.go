@@ -36,11 +36,11 @@ type videoRTC struct {
 func createDepay(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 	switch codec {
 	case VideoRTCCodecVP8:
-		return gstreamer.NewElement("rtpvp8depay", fmt.Sprintf("decodebin_%d", id))
+		return gstreamer.NewElement("rtpvp8depay", fmt.Sprintf("depay_%d", id))
 	case VideoRTCCodecVP9:
-		return gstreamer.NewElement("rtpvp9depay", fmt.Sprintf("decodebin_%d", id))
+		return gstreamer.NewElement("rtpvp9depay", fmt.Sprintf("depay_%d", id))
 	case VideoRTCCodecH264:
-		return gstreamer.NewElement("rtph264depay", fmt.Sprintf("decodebin_%d", id))
+		return gstreamer.NewElement("rtph264depay", fmt.Sprintf("depay_%d", id))
 	}
 
 	return nil, nil
