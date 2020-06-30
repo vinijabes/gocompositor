@@ -13,6 +13,7 @@ type VideoTest interface {
 type videoTest struct {
 	video
 	videofilter gstreamer.Element
+	queue       gstreamer.Element
 }
 
 func NewVideoTest(width int, height int) (VideoTest, error) {
@@ -27,6 +28,11 @@ func NewVideoTest(width int, height int) (VideoTest, error) {
 		return nil, err
 	}
 
+	queue, err := gstreamer.NewElement("queue", fmt.Sprintf("queue_%d", videoIDGenerator))
+	if err != nil {
+		return nil, err
+	}
+
 	videobox, err := gstreamer.NewElement("videobox", fmt.Sprintf("box_%d", videoIDGenerator))
 	if err != nil {
 		return nil, err
@@ -34,6 +40,7 @@ func NewVideoTest(width int, height int) (VideoTest, error) {
 
 	video.videosrc = videosrc
 	video.videofilter = videofilter
+	video.queue = queue
 	video.videobox = videobox
 
 	videoIDGenerator++
@@ -56,9 +63,11 @@ func (v *videoTest) SetPipeline(pipeline gstreamer.Pipeline) error {
 
 	if !pipeline.Add(v.videosrc) ||
 		!pipeline.Add(v.videofilter) ||
+		!pipeline.Add(v.queue) ||
 		!pipeline.Add(v.videobox) ||
 		!v.videosrc.Link(v.videofilter) ||
-		!v.videofilter.Link(v.videobox) {
+		!v.videofilter.Link(v.queue) ||
+		!v.queue.Link(v.videobox) {
 		return ErrVideoSetPipeline
 	}
 

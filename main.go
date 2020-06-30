@@ -4,14 +4,15 @@ import (
 	"log"
 	"time"
 
-	"github.com/vinijabes/gocompositor/compositor"
-	gstreamer "github.com/vinijabes/gostreamer"
+	"github.com/vinijabes/gocompositor/pkg/compositor"
+	"github.com/vinijabes/gocompositor/pkg/compositor/element"
+	gstreamer "github.com/vinijabes/gostreamer/pkg/gstreamer"
 )
 
-func handleMessages(c <-chan *gstreamer.Message) {
+func handleMessages(c <-chan gstreamer.Message) {
 	log.Println("Start handling messages")
 	for msg := range c {
-		log.Println(msg.GetTypeName())
+		log.Println(msg.GetName())
 	}
 	log.Println("Stop handling messages")
 }
@@ -22,22 +23,22 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	video, err := compositor.NewVideo(640, 360, "videotestsrc")
+	video, err := element.NewVideoRTSP(640, 360, "rstp://ip", 0)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	video2, err := compositor.NewTestVideo(640, 360, 23)
+	video2, err := element.NewVideoRTSP(640, 360, "rstp://ip", 500)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	video3, err := compositor.NewTestVideo(640, 360, 1)
+	video3, err := element.NewVideoRTSP(640, 360, "rstp://ip", 1000)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	video4, err := compositor.NewTestVideo(640, 360, 24)
+	video4, err := element.NewVideoRTSP(640, 360, "rstp://ip", 2000)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -52,43 +53,34 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	enc, err := gstreamer.NewElement("x264enc", "enc")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	convert.Set("n-threads", 4)
 
-	mux, err := gstreamer.NewElement("flvmux", "mux")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	// enc, err := gstreamer.NewElement("x264enc", "enc")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
 
-	sink, err := gstreamer.NewElement("rtmpsink", "sink")
+	// mux, err := gstreamer.NewElement("flvmux", "mux")
+	// if err != nil {
+	// 	log.Fatalln(err)
+	// }
+
+	sink, err := gstreamer.NewElement("autovideosink", "sink")
 	if err != nil {
 		log.Fatalln(err)
 	}
 
 	cmp.Add(convert)
-	cmp.Add(enc)
-	cmp.Add(mux)
+	// cmp.Add(enc)
+	// cmp.Add(mux)
 	cmp.Add(sink)
 
 	cmp.LinkVideoSink(convert)
-	err = convert.Link(enc)
-	if err != nil {
-		log.Fatalln(err)
-	}
+	convert.Link(sink)
+	// enc.Link(mux)
+	// mux.Link(sink)
 
-	err = enc.Link(mux)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	err = mux.Link(sink)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	sink.Set("location", "rtmp://teste.com")
+	//sink.Set("location", "rtmp://teste.com")
 
 	layout := compositor.NewLayout(1280, 720)
 	videoRule1 := compositor.NewLayoutRule()
@@ -129,10 +121,10 @@ func main() {
 	layout.AddRule(videoRule4, 4)
 	cmp.SetLayout(layout)
 
-	_, err = compositor.NewRTCVideo(compositor.CodecVP8, 640, 360)
-	if err != nil {
-		panic(err)
-	}
+	// _, err = compositor.NewRTCVideo(compositor.CodecVP8, 640, 360)
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	// box2.SetPos(int64(640), int64(0))
 	// box3.SetPos(int64(0), int64(360))

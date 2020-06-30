@@ -74,7 +74,7 @@ func NewCompositor() (*Compositor, error) {
 }
 
 func newMixer(id int) (*Mixer, error) {
-	videomixer, err := gstreamer.NewElement("videomixer", fmt.Sprintf("videomixer_%d", id))
+	videomixer, err := gstreamer.NewElement("compositor", fmt.Sprintf("videomixer_%d", id))
 	if err != nil {
 		return nil, err
 	}
