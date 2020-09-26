@@ -185,19 +185,6 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 
 	fmt.Println("Linking video")
 
-	// v.decodebin.SetOnPadAddedCallback(func(element gstreamer.Element, pad gstreamer.Pad) {
-	// 	fmt.Println("Decodebin pad-added")
-	// 	sinkpad, err := v.videoscale.GetStaticPad("sink")
-	// 	if err != nil {
-	// 		fmt.Println(err)
-	// 	}
-
-	// 	result := pad.Link(sinkpad)
-	// 	if result != gstreamer.GstPadLinkOk {
-	// 		fmt.Println("Failed to link rtsp pad")
-	// 	}
-	// })
-
 	if !v.videosrc.Link(v.inputfilter) ||
 		!v.inputfilter.Link(v.videodepay) ||
 		!v.videodepay.Link(v.decodebin) ||

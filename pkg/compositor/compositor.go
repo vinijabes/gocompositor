@@ -11,10 +11,12 @@ import (
 
 //Compositor ...
 type Compositor struct {
-	pipeline gstreamer.Pipeline
-	mixer    *Mixer
-	layout   *Layout
-	videos   element.Videos
+	pipeline   gstreamer.Pipeline
+	mixer      *Mixer
+	audioMixer *AudioMixer
+	layout     *Layout
+	videos     element.Videos
+	audios     []gstreamer.Element
 }
 
 //Mixer ...
@@ -22,6 +24,12 @@ type Mixer struct {
 	gstMixer        gstreamer.Element
 	gstOutputFilter gstreamer.Element
 	gstPadTemplate  gstreamer.PadTemplate
+}
+
+//Mixer ...
+type AudioMixer struct {
+	gstMixer       gstreamer.Element
+	gstPadTemplate gstreamer.PadTemplate
 }
 
 var pipelineIDGenerator = 0
@@ -55,12 +63,18 @@ func NewCompositor() (*Compositor, error) {
 		return nil, err
 	}
 
-	compositor := &Compositor{
-		pipeline: pipeline,
-		mixer:    mixer,
+	audioMixer, err := newAudioMixer(pipelineIDGenerator)
+	if err != nil {
+		return nil, err
 	}
 
-	if !pipeline.Add(mixer.gstMixer) || !pipeline.Add(mixer.gstOutputFilter) {
+	compositor := &Compositor{
+		pipeline:   pipeline,
+		mixer:      mixer,
+		audioMixer: audioMixer,
+	}
+
+	if !pipeline.Add(mixer.gstMixer) || !pipeline.Add(mixer.gstOutputFilter) || !pipeline.Add(audioMixer.gstMixer) {
 		return nil, ErrCreateCompositor
 	}
 
@@ -105,6 +119,24 @@ func newMixer(id int) (*Mixer, error) {
 	return mixer, nil
 }
 
+func newAudioMixer(id int) (*AudioMixer, error) {
+	videomixer, err := gstreamer.NewElement("audiomixer", fmt.Sprintf("audiomixer_%d", id))
+	if err != nil {
+		return nil, err
+	}
+
+	padTemplate, err := videomixer.GetPadTemplate("sink_%u")
+	if err != nil {
+		return nil, err
+	}
+	mixer := &AudioMixer{
+		gstMixer:       videomixer,
+		gstPadTemplate: padTemplate,
+	}
+
+	return mixer, nil
+}
+
 //AddVideo add new video
 func (c *Compositor) AddVideo(v element.Video) error {
 	pipeline := c.pipeline
@@ -124,6 +156,20 @@ func (c *Compositor) AddVideo(v element.Video) error {
 	if c.layout != nil {
 		c.layout.ApplyLayout(c.videos)
 	}
+
+	return nil
+}
+
+//AddAudio add new audio
+func (c *Compositor) AddAudio(a gstreamer.Element) error {
+	c.pipeline.Add(a)
+
+	err := c.audioMixer.link(a)
+	if err != nil {
+		return err
+	}
+
+	c.audios = append(c.audios, a)
 
 	return nil
 }
@@ -160,6 +206,11 @@ func (c *Compositor) LinkVideoSink(e gstreamer.Element) {
 	c.mixer.gstOutputFilter.Link(e)
 }
 
+//LinkAudioSink ...
+func (c *Compositor) LinkAudioSink(e gstreamer.Element) {
+	c.audioMixer.gstMixer.Link(e)
+}
+
 func (m *Mixer) link(v element.Video) error {
 	sink, err := m.gstMixer.RequestPad(m.gstPadTemplate, nil, nil)
 	if err != nil {
@@ -175,6 +226,26 @@ func (m *Mixer) link(v element.Video) error {
 
 	if result != gstreamer.GstPadLinkOk {
 		return errors.New("Failed to link sink with video element")
+	}
+
+	return nil
+}
+
+func (m *AudioMixer) link(a gstreamer.Element) error {
+	sink, err := m.gstMixer.RequestPad(m.gstPadTemplate, nil, nil)
+	if err != nil {
+		return err
+	}
+
+	srcpad, err := a.GetStaticPad("src")
+	if err != nil {
+		return err
+	}
+
+	result := srcpad.Link(sink)
+
+	if result != gstreamer.GstPadLinkOk {
+		return fmt.Errorf("Failed to link sink with auido element: %d", result)
 	}
 
 	return nil
