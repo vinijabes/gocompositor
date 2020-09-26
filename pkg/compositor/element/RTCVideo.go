@@ -75,6 +75,19 @@ func createDepay(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 	return nil, nil
 }
 
+func createDecoder(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
+	switch codec {
+	case VideoRTCCodecVP8:
+		return gstreamer.NewElement("vp8dec", fmt.Sprintf("decoder_%d", id))
+	case VideoRTCCodecVP9:
+		return gstreamer.NewElement("vp9dec", fmt.Sprintf("decoder_%d", id))
+	case VideoRTCCodecH264:
+		return gstreamer.NewElement("avdec_h264", fmt.Sprintf("decoder_%d", id))
+	}
+
+	return nil, nil
+}
+
 func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 	video := &videoRTC{}
 	videosrc, err := gstreamer.NewElement("appsrc", fmt.Sprintf("source_%d", videoIDGenerator))
@@ -96,7 +109,7 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 		return nil, err
 	}
 
-	decodebin, err := gstreamer.NewElement("decodebin", fmt.Sprintf("decodebin_%d", videoIDGenerator))
+	decodebin, err := createDecoder(codec, videoIDGenerator)
 	if err != nil {
 		return nil, err
 	}
@@ -172,22 +185,23 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 
 	fmt.Println("Linking video")
 
-	v.decodebin.SetOnPadAddedCallback(func(element gstreamer.Element, pad gstreamer.Pad) {
-		fmt.Println("Decodebin pad-added")
-		sinkpad, err := v.videoscale.GetStaticPad("sink")
-		if err != nil {
-			fmt.Println(err)
-		}
+	// v.decodebin.SetOnPadAddedCallback(func(element gstreamer.Element, pad gstreamer.Pad) {
+	// 	fmt.Println("Decodebin pad-added")
+	// 	sinkpad, err := v.videoscale.GetStaticPad("sink")
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	}
 
-		result := pad.Link(sinkpad)
-		if result != gstreamer.GstPadLinkOk {
-			fmt.Println("Failed to link rtsp pad")
-		}
-	})
+	// 	result := pad.Link(sinkpad)
+	// 	if result != gstreamer.GstPadLinkOk {
+	// 		fmt.Println("Failed to link rtsp pad")
+	// 	}
+	// })
 
 	if !v.videosrc.Link(v.inputfilter) ||
 		!v.inputfilter.Link(v.videodepay) ||
 		!v.videodepay.Link(v.decodebin) ||
+		!v.decodebin.Link(v.videoscale) ||
 		!v.videoscale.Link(v.videofilter) ||
 		!v.videofilter.Link(v.timeoverlay) ||
 		!v.timeoverlay.Link(v.queue) ||
