@@ -11,10 +11,9 @@ RUN \
             gstreamer1.0-doc \
             gstreamer1.0-tools \
             libgstreamer1.0-dev && \
-    apt-get install -y libgstreamer-plugins-base1.0-dev \
-            #libgstreamer-plugins-good1.0-dev \
-            libgstreamer-plugins-bad1.0-dev \
-            xvfb \
+            libgstreamer-plugins-base1.0-dev && \
+            libgstreamer-plugins-bad1.0-dev &&\
+    apt-get install -y xvfb \
             x11-xserver-utils
             
 

@@ -36,6 +36,8 @@ github.com/vinijabes/gostreamer v0.1.4 h1:G0ffHhfS0ijRPqMp62fzcy5dlgAhU2UThvLx6/
 github.com/vinijabes/gostreamer v0.1.4/go.mod h1:MAY+dEJuXm1US1WKVFWXIIxeyrQw2t2DLyjb1vnU4hs=
 github.com/vinijabes/gostreamer v0.1.5 h1:n5LyVuV06qwcAotiT3bkiAmjQD6puvTkNCe5K5Og3uQ=
 github.com/vinijabes/gostreamer v0.1.5/go.mod h1:MAY+dEJuXm1US1WKVFWXIIxeyrQw2t2DLyjb1vnU4hs=
+github.com/vinijabes/gostreamer v0.1.6 h1:+MaBNHlEDFvzlLrIiZlZWEOZ5XNR5gHtg2JdwFjNjgI=
+github.com/vinijabes/gostreamer v0.1.6/go.mod h1:MAY+dEJuXm1US1WKVFWXIIxeyrQw2t2DLyjb1vnU4hs=
 golang.org/x/sys v0.0.0-20190222072716-a9d3bda3a223/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
 golang.org/x/sys v0.0.0-20190813064441-fde4db37ae7a/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/text v0.3.2 h1:tW2bmiBqwgJj/UpqtC8EpXEZVYOwU0yG4iWbprSVAcs=

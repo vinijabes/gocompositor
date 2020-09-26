@@ -25,12 +25,41 @@ type VideoRTC interface {
 
 type videoRTC struct {
 	video
+	inputfilter gstreamer.Element
 	videodepay  gstreamer.Element
 	decodebin   gstreamer.Element
 	videoscale  gstreamer.Element
 	videofilter gstreamer.Element
 	timeoverlay gstreamer.Element
 	queue       gstreamer.Element
+}
+
+func createInputFilter(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
+	var err error
+	var caps gstreamer.Caps
+
+	inputfilter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("inputfilter_%d", id))
+	if err != nil {
+		return nil, nil
+	}
+
+	switch codec {
+	case VideoRTCCodecVP8:
+		caps, err = gstreamer.NewCapsFromString("application/x-rtp, encoding-name=VP8-DRAFT-IETF-01 ")
+		break
+	case VideoRTCCodecVP9:
+	case VideoRTCCodecH264:
+		caps, err = gstreamer.NewCapsFromString("application/x-rtp")
+		break
+	}
+
+	if err != nil {
+		return nil, nil
+	}
+
+	inputfilter.Set("caps", caps)
+
+	return inputfilter, nil
 }
 
 func createDepay(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
@@ -56,6 +85,11 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 	videosrc.Set("format", 3)
 	videosrc.Set("is-live", true)
 	videosrc.Set("do-timestamp", true)
+
+	inputfilter, err := createInputFilter(codec, videoIDGenerator)
+	if err != nil {
+		return nil, err
+	}
 
 	videodepay, err := createDepay(codec, videoIDGenerator)
 	if err != nil {
@@ -93,6 +127,7 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 	}
 
 	video.videosrc = videosrc
+	video.inputfilter = inputfilter
 	video.videodepay = videodepay
 	video.decodebin = decodebin
 	video.videoscale = videoscale
@@ -124,6 +159,7 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 	}
 
 	if !pipeline.Add(v.videosrc) ||
+		!pipeline.Add(v.inputfilter) ||
 		!pipeline.Add(v.videodepay) ||
 		!pipeline.Add(v.decodebin) ||
 		!pipeline.Add(v.videoscale) ||
@@ -134,18 +170,7 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 		return ErrVideoSetPipeline
 	}
 
-	v.videosrc.SetOnPadAddedCallback(func(element gstreamer.Element, pad gstreamer.Pad) {
-		fmt.Println("VideoSrc pad-added")
-		sinkpad, err := v.decodebin.GetStaticPad("sink")
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		result := pad.Link(sinkpad)
-		if result != gstreamer.GstPadLinkOk {
-			fmt.Println("Failed to link rtsp pad")
-		}
-	})
+	fmt.Println("Linking video")
 
 	v.decodebin.SetOnPadAddedCallback(func(element gstreamer.Element, pad gstreamer.Pad) {
 		fmt.Println("Decodebin pad-added")
@@ -160,9 +185,13 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 		}
 	})
 
-	if !v.videoscale.Link(v.videofilter) ||
+	if !v.videosrc.Link(v.inputfilter) ||
+		!v.inputfilter.Link(v.videodepay) ||
+		!v.videodepay.Link(v.decodebin) ||
+		!v.videoscale.Link(v.videofilter) ||
 		!v.videofilter.Link(v.timeoverlay) ||
-		!v.timeoverlay.Link(v.videobox) {
+		!v.timeoverlay.Link(v.queue) ||
+		!v.queue.Link(v.videobox) {
 		return ErrVideoLinkingSetPipeline
 	}
 
