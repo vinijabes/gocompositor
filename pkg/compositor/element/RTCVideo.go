@@ -40,7 +40,7 @@ func createInputFilter(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 
 	inputfilter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("inputfilter_%d", id))
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	switch codec {
@@ -54,7 +54,7 @@ func createInputFilter(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 	}
 
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
 
 	inputfilter.Set("caps", caps)
