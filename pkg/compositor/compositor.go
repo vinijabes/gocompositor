@@ -17,6 +17,7 @@ type Compositor struct {
 	layout     *Layout
 	videos     element.Videos
 	audios     []gstreamer.Element
+	eos        bool
 }
 
 //Mixer ...
@@ -40,6 +41,7 @@ func printBusMessages(bus gstreamer.Bus) {
 	for {
 		for bus.HavePending() {
 			message, err := bus.Pop()
+			fmt.Println(message.GetStructure())
 
 			if err != nil {
 				fmt.Println(err)
@@ -181,7 +183,9 @@ func (c *Compositor) Add(e gstreamer.Element) {
 
 //Start ...
 func (c *Compositor) Start() {
-	c.pipeline.SetState(gstreamer.GstStatePlaying)
+	if !c.eos {
+		c.pipeline.SetState(gstreamer.GstStatePlaying)
+	}
 }
 
 //Stop ...
@@ -192,6 +196,15 @@ func (c *Compositor) Stop() {
 //Pause ...
 func (c *Compositor) Pause() {
 	c.pipeline.SetState(gstreamer.GstStatePaused)
+}
+
+//SendEOS ...
+func (c *Compositor) SendEOS() {
+	fmt.Println("SENDING EOS TO PIPELINE")
+	if !c.pipeline.SendEOS() {
+		fmt.Println("FAILED TO SEND EOS")
+	}
+	c.eos = true
 }
 
 //SetLayout ...
