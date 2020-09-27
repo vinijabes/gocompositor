@@ -146,12 +146,12 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 		return nil, err
 	}
 
-	logging.Debug("creating RTC video timeoverlay")
-	timeoverlay, err := gstreamer.NewElement("timeoverlay", fmt.Sprintf("timeoverlay_%d", videoIDGenerator))
-	if err != nil {
-		logging.Error(err)
-		return nil, err
-	}
+	// logging.Debug("creating RTC video timeoverlay")
+	// timeoverlay, err := gstreamer.NewElement("timeoverlay", fmt.Sprintf("timeoverlay_%d", videoIDGenerator))
+	// if err != nil {
+	// 	logging.Error(err)
+	// 	return nil, err
+	// }
 
 	logging.Debug("creating RTC video queue")
 	queue, err := gstreamer.NewElement("queue", fmt.Sprintf("queue_%d", videoIDGenerator))
@@ -166,7 +166,7 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 	video.decodebin = decodebin
 	video.videoscale = videoscale
 	video.videofilter = videofilter
-	video.timeoverlay = timeoverlay
+	// video.timeoverlay = timeoverlay
 	video.queue = queue
 	video.videobox = videobox
 
@@ -185,7 +185,7 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 			!v.pipeline.Remove(v.decodebin) ||
 			!v.pipeline.Remove(v.videoscale) ||
 			!v.pipeline.Remove(v.videofilter) ||
-			!v.pipeline.Remove(v.timeoverlay) ||
+			// !v.pipeline.Remove(v.timeoverlay) ||
 			!v.pipeline.Remove(v.queue) ||
 			!v.pipeline.Remove(v.videobox) {
 			return ErrVideoSetPipeline
@@ -198,7 +198,7 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 		!pipeline.Add(v.decodebin) ||
 		!pipeline.Add(v.videoscale) ||
 		!pipeline.Add(v.videofilter) ||
-		!pipeline.Add(v.timeoverlay) ||
+		// !pipeline.Add(v.timeoverlay) ||
 		!pipeline.Add(v.queue) ||
 		!pipeline.Add(v.videobox) {
 		return ErrVideoSetPipeline
@@ -211,8 +211,8 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 		!v.videodepay.Link(v.decodebin) ||
 		!v.decodebin.Link(v.videoscale) ||
 		!v.videoscale.Link(v.videofilter) ||
-		!v.videofilter.Link(v.timeoverlay) ||
-		!v.timeoverlay.Link(v.queue) ||
+		!v.videofilter.Link(v.queue) ||
+		// !v.timeoverlay.Link(v.queue) ||
 		!v.queue.Link(v.videobox) {
 		return ErrVideoLinkingSetPipeline
 	}
