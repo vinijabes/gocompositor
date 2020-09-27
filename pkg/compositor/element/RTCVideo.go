@@ -45,7 +45,7 @@ func createInputFilter(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 
 	switch codec {
 	case VideoRTCCodecVP8:
-		caps, err = gstreamer.NewCapsFromString("application/x-rtp, encoding-name=VP8-DRAFT-IETF-01 ")
+		caps, err = gstreamer.NewCapsFromString("application/x-rtp, encoding-name=VP8-DRAFT-IETF-01")
 		break
 	case VideoRTCCodecVP9:
 	case VideoRTCCodecH264:
