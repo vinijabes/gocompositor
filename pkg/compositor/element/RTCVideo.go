@@ -3,7 +3,7 @@ package element
 import (
 	"fmt"
 
-	"github.com/vinijabes/gocompositor/internal/logging"
+	"github.com/vinijabes/gocompositor/pkg/compositor/logging"
 	"github.com/vinijabes/gostreamer/pkg/gstreamer"
 )
 

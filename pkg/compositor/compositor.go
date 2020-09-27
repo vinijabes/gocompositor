@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/vinijabes/gocompositor/pkg/compositor/element"
+	"github.com/vinijabes/gocompositor/pkg/compositor/logging"
 	gstreamer "github.com/vinijabes/gostreamer/pkg/gstreamer"
 )
 
@@ -262,4 +263,14 @@ func (m *AudioMixer) link(a gstreamer.Element) error {
 	}
 
 	return nil
+}
+
+//SetDebugLogger sets the debug logger function
+func SetDebugLogger(logger logging.Logger) {
+	logging.SetDebugLogger(logger)
+}
+
+//SetErrorLogger sets the error logger function
+func SetErrorLogger(logger logging.Logger) {
+	logging.SetErrorLogger(logger)
 }
