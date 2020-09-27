@@ -3,6 +3,7 @@ package element
 import (
 	"fmt"
 
+	"github.com/vinijabes/gocompositor/internal/logging"
 	"github.com/vinijabes/gostreamer/pkg/gstreamer"
 )
 
@@ -89,9 +90,13 @@ func createDecoder(codec VideoRTCCodec, id int) (gstreamer.Element, error) {
 }
 
 func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
+	logging.Debug("creating new RTC video src")
 	video := &videoRTC{}
+
+	logging.Debug("creating RTC video appsrc")
 	videosrc, err := gstreamer.NewElement("appsrc", fmt.Sprintf("source_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
@@ -99,43 +104,59 @@ func NewVideoRTC(width int, height int, codec VideoRTCCodec) (VideoRTC, error) {
 	videosrc.Set("is-live", true)
 	videosrc.Set("do-timestamp", true)
 
+	logging.Debug("creating RTC video input capsfilter")
 	inputfilter, err := createInputFilter(codec, videoIDGenerator)
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video rtp depay")
 	videodepay, err := createDepay(codec, videoIDGenerator)
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video decoder")
 	decodebin, err := createDecoder(codec, videoIDGenerator)
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video scale")
 	videoscale, err := gstreamer.NewElement("videoscale", fmt.Sprintf("videoscale_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video scale filter")
 	videofilter, err := gstreamer.NewElement("capsfilter", fmt.Sprintf("videofilter_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video output box")
 	videobox, err := gstreamer.NewElement("videobox", fmt.Sprintf("box_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video timeoverlay")
 	timeoverlay, err := gstreamer.NewElement("timeoverlay", fmt.Sprintf("timeoverlay_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
+	logging.Debug("creating RTC video queue")
 	queue, err := gstreamer.NewElement("queue", fmt.Sprintf("queue_%d", videoIDGenerator))
 	if err != nil {
+		logging.Error(err)
 		return nil, err
 	}
 
@@ -202,7 +223,12 @@ func (v *videoRTC) SetPipeline(pipeline gstreamer.Pipeline) error {
 }
 
 func (v *videoRTC) SetSize(width int, height int) {
-	caps, _ := gstreamer.NewCapsFromString(fmt.Sprintf("%s,width=%d,height=%d", v.getCapsProps(), width, height))
+	logging.Debug(fmt.Sprintf("setting video(%s) size to (%d, %d)", v.videosrc.GetName(), width, height))
+	caps, err := gstreamer.NewCapsFromString(fmt.Sprintf("%s,width=%d,height=%d", v.getCapsProps(), width, height))
+	if err != nil {
+		logging.Error(err)
+	}
+
 	v.videofilter.Set("caps", caps)
 }
 
